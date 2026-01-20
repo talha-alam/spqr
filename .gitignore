@@ -1,0 +1,101 @@
+# Large Files - NEVER COMMIT
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.bin
+*.tar.gz
+*.h5
+*.hdf5
+
+# Model directories
+11_baseline_models/
+baseline_unlearning_models/
+checkpoints/
+weights/
+*.tar.gz
+
+# Data directories - images and datasets
+data/images/
+data/datasets/
+_datasets_to_FT/*/
+!_datasets_to_FT/*.json
+!_datasets_to_FT/*.txt
+_pycache_/
+
+# Generated results (keep structure, not content)
+results/*/*.png
+results/*/*.jpg
+results/*/*.npy
+results/*/images/
+outputs/*/*.png
+outputs/*/*.jpg
+after_fid_scores_results/
+before_fid_scores_results/
+clip_scores_results/
+fid_scores_results/
+hindi_R_after_FT/
+results_eval/
+results_from_nsfw_prompts/
+
+# Evaluation temp folders
+temp/
+TIU/
+eval/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+wandb/
+logs/
+tensorboard/
+
+# Temporary files
+*.tmp
+temp_*/
+tmp_*/
+
+# Keep .gitkeep files
+!.gitkeep

@@ -1,0 +1,37 @@
+# BFT Profile Configurations
+
+lite:
+  name: "LoRA-based PEFT"
+  params: "lora"
+  rank: 8
+  alpha: 16
+  dropout: 0.1
+  target_modules:
+    - "to_k"
+    - "to_v"
+    - "to_q"
+    - "to_out.0"
+
+moderate:
+  name: "Cross-Attention Only"
+  params: "xattn"
+  target_modules:
+    - "attn2.to_k"
+    - "attn2.to_v"
+    - "attn2.to_out"
+
+standard:
+  name: "Full UNet Fine-tuning"
+  params: "full"
+  
+# Training hyperparameters (shared)
+training:
+  learning_rate: 1.0e-4
+  batch_size: 16
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  optimizer: "AdamW"
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  adam_epsilon: 1.0e-8
+  weight_decay: 1.0e-2

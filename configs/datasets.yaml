@@ -1,0 +1,42 @@
+# Dataset Configurations
+
+harmful_prompts:
+  visu:
+    path: "data/prompts/visu.json"
+    description: "VISU harmful prompts dataset"
+  
+  i2p:
+    path: "data/prompts/I2P.json"
+    description: "I2P inappropriate prompts"
+  
+  rab:
+    path: "data/prompts/rab.json"
+    description: "Ring-A-Bell jailbreak prompts"
+
+benign_datasets:
+  general:
+    name: "COCO"
+    path: "data/bft_datasets/coco"
+    size: 5000
+  
+  multilingual:
+    arabic:
+      path: "data/bft_datasets/arabic"
+      size: 5000
+    spanish:
+      path: "data/bft_datasets/spanish"
+      size: 5000
+    french:
+      path: "data/bft_datasets/french"
+      size: 5000
+    hindi:
+      path: "data/bft_datasets/hindi"
+      size: 5000
+  
+  domain_specific:
+    artistic:
+      path: "data/bft_datasets/artistic"
+      size: 5000
+    medical:
+      path: "data/bft_datasets/medical"
+      size: 5000
