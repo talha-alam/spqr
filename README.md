@@ -204,70 +204,10 @@ For questions or issues, please open a GitHub issue or contact:
 - Mohammed Talha Alam: mohammed.alam@mbzuai.ac.ae
 EOF
 
-# Create requirements.txt
-cat > "$DEST/requirements.txt" << 'EOF'
-# Core dependencies
-torch>=2.0.0
-torchvision>=0.15.0
-diffusers>=0.21.0
-transformers>=4.30.0
-accelerate>=0.20.0
-
-# Fine-tuning
-peft>=0.4.0
-
-# Metrics
-numpy>=1.24.0
-scipy>=1.10.0
-scikit-image>=0.20.0
-opencv-python>=4.7.0
-
-# Image processing
-Pillow>=9.5.0
-
-# Data handling
-pandas>=2.0.0
-PyYAML>=6.0
-
-# Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
-
-# Utilities
-tqdm>=4.65.0
-wandb>=0.15.0
-
 # Safety classifiers
 # Note: Install LLaVA-Guard and NudeNet separately
 # pip install git+https://github.com/LAION-AI/CLIP-as-service.git
 EOF
-
-# ============================================
-# 12. CREATE SETUP.PY
-# ============================================
-echo "  → Creating setup.py..."
-
-cat > "$DEST_DIR/setup.py" << 'EOFSETUP'
-from setuptools import setup, find_packages
-
-setup(
-    name="spqr-benchmark",
-    version="0.1.0",
-    description="Official implementation of SPQR: A Standardized Benchmark for Safety Alignment",
-    author="Mohammed Talha Alam et al.",
-    packages=find_packages(),
-    python_requires=">=3.8",
-    install_requires=[
-        "torch>=2.0.0",
-        "diffusers>=0.21.0",
-        "transformers>=4.30.0",
-        "accelerate>=0.20.0",
-        "peft>=0.4.0",
-        "nudenet",
-        "clip-interrogator"
-    ],
-)
-EOFSETUP
 
 echo ""
 echo "✅ Organization complete!"
