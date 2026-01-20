@@ -203,26 +203,3 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 For questions or issues, please open a GitHub issue or contact:
 - Mohammed Talha Alam: mohammed.alam@mbzuai.ac.ae
 EOF
-
-# Safety classifiers
-# Note: Install LLaVA-Guard and NudeNet separately
-# pip install git+https://github.com/LAION-AI/CLIP-as-service.git
-EOF
-
-echo ""
-echo "✅ Organization complete!"
-echo ""
-echo "📍 New structure created at: $DEST"
-echo ""
-echo "Next steps:"
-echo "1. cd $DEST"
-echo "2. Review the organized files"
-echo "3. Initialize git: git init"
-echo "4. Create GitHub repo and add remote"
-echo "5. Commit and push"
-echo ""
-echo "⚠️  Remember: The script copied CODE files only."
-echo "    Large files (models, datasets, results) are excluded."
-echo ""
-echo "Run this to verify no large files:"
-echo "  cd $DEST && find . -type f -size +10M"
