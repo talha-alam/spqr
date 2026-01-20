@@ -1,4 +1,4 @@
-# SPQR: Standardized Benchmark for Safety Alignment in Text-to-Image Models
+# SPQR: A Standardized Benchmark for Modern Safety Alignment Methods in Text-to-Image Diffusion Models
 
 [![arXiv](https://img.shields.io/badge/arXiv-2025.19558-b31b1b.svg)](https://arxiv.org/abs/2511.19558)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
