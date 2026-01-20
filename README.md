@@ -1,6 +1,6 @@
 # SPQR: Standardized Benchmark for Safety Alignment in Text-to-Image Models
 
-[![arXiv](https://img.shields.io/badge/arXiv-2025.XXXXX-b31b1b.svg)](https://arxiv.org/abs/XXXXX)
+[![arXiv](https://img.shields.io/badge/arXiv-2025.XXXXX-b31b1b.svg)](https://arxiv.org/abs/2511.19558)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -189,7 +189,7 @@ To add a new safety method:
 @article{alam2025spqr,
   title={SPQR: A Standardized Benchmark for Modern Safety Alignment Methods in Text-to-Image Diffusion Models},
   author={Alam, Mohammed Talha and Saadi, Nada and Shamshad, Fahad and Lukas, Nils and Nandakumar, Karthik and Karray, Fakhri and Poppi, Samuele},
-  journal={arXiv preprint arXiv:2025.XXXXX},
+  journal={arXiv preprint arXiv:2511.19558},
   year={2025}
 }
 ```
@@ -202,4 +202,3 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 
 For questions or issues, please open a GitHub issue or contact:
 - Mohammed Talha Alam: mohammed.alam@mbzuai.ac.ae
-EOF
