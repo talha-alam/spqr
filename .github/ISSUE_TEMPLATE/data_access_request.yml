@@ -1,0 +1,185 @@
+name: "📋 Data Access Request — Harmful Evaluation Prompts"
+description: >
+  Request access to the SPQR harmful evaluation prompt sets (ViSU, I2P, Ring-A-Bell compilations
+  in data/prompts/). Read DATA_ACCESS.md before submitting. Requests are reviewed within 5 business days.
+title: "[DATA ACCESS] <Institution> — <Brief Research Purpose>"
+labels: ["data-access", "pending-review"]
+assignees:
+  - talha-alam
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## SPQR Benchmark — Harmful Prompt Access Request
+
+        Thank you for your interest in the **SPQR benchmark** (ECCV 2026).
+
+        The `data/prompts/` directory contains curated prompt sets derived from **ViSU**, **I2P**, and **Ring-A-Bell**, used to evaluate the Safety (S) and Robustness (R) axes. Because these prompts describe sexually explicit, violent, or otherwise harmful scenarios, we require a brief acknowledgment before granting access.
+
+        > ⏱ **Review time:** ~5 business days. Access is not denied without cause — all legitimate safety research purposes are welcome.
+
+        Please complete **all required fields** below.
+
+  - type: markdown
+    attributes:
+      value: "---\n### 👤 Requester Information"
+
+  - type: input
+    id: full_name
+    attributes:
+      label: Full Name
+      placeholder: e.g., Jane Smith
+    validations:
+      required: true
+
+  - type: input
+    id: email
+    attributes:
+      label: Institutional Email Address
+      description: Please use your university or company email, not a personal address.
+      placeholder: e.g., j.smith@university.edu
+    validations:
+      required: true
+
+  - type: input
+    id: institution
+    attributes:
+      label: Institution / Organization
+      placeholder: e.g., MIT, Google DeepMind, Stanford University
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role / Position
+      options:
+        - Professor / Principal Investigator
+        - Postdoctoral Researcher
+        - PhD Student
+        - Master's Student
+        - Industry Research Scientist
+        - Industry Engineer
+        - Independent Researcher
+        - Other
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "---\n### 🔬 Research Purpose"
+
+  - type: dropdown
+    id: intended_use
+    attributes:
+      label: Primary Intended Use
+      description: Select the category that best describes your use case.
+      options:
+        - Reproducing SPQR benchmark results from the paper
+        - Evaluating a new safety-alignment method against SPQR
+        - Comparing safety methods in an independent research study
+        - Developing or improving safety classifiers / detectors
+        - Red-teaming / adversarial robustness research
+        - Academic course / teaching (with IRB/ethics approval)
+        - Other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: research_description
+    attributes:
+      label: Brief Description of Research
+      description: >
+        Please describe in 2–5 sentences how you plan to use the SPQR harmful prompts.
+        Mention the research project, goal, and how benchmark evaluation fits in.
+      placeholder: >
+        e.g., "We are developing a new concept-erasure method for Stable Diffusion XL and
+        need to evaluate its Safety (S) and Robustness (R) scores under the SPQR framework
+        to compare against RECE, UCE, and MACE. The prompts will be used exclusively for
+        evaluation runs on a compute cluster at [institution], not for content generation
+        or public distribution."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: prompt_sets
+    attributes:
+      label: Prompt Sets Requested
+      description: Check all that apply. If unsure, select all — we will provide what is needed.
+      options:
+        - label: "ViSU (Visual Safety Understanding — Nudity, Violence, Weapons, Blood, Brutality)"
+        - label: "I2P (Inappropriate Prompts — broad NSFW categories)"
+        - label: "RAB / Ring-A-Bell (jailbreak-style adversarial prompts)"
+        - label: "All of the above"
+
+  - type: markdown
+    attributes:
+      value: "---\n### ✅ Terms of Use Agreement"
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms of Use
+      description: >
+        Please read [DATA_ACCESS.md](../blob/main/DATA_ACCESS.md) in full before checking these boxes.
+        **All boxes are required.**
+      options:
+        - label: >
+            **Research use only.** I will use these prompts solely for academic research,
+            safety evaluation, or benchmark reproduction — not to generate, distribute,
+            or solicit harmful content.
+          required: true
+        - label: >
+            **No redistribution.** I will not publicly redistribute, re-host, or publish
+            the raw prompt files beyond what is necessary for reproducibility in a
+            peer-reviewed publication.
+          required: true
+        - label: >
+            **Attribution.** Any work using these prompts will cite the SPQR paper
+            (Alam et al., ECCV 2026) and the original dataset papers (ViSU, I2P, RAB).
+          required: true
+        - label: >
+            **Source dataset compliance.** I will independently comply with the terms
+            of use of the original datasets (ViSU / SafeCLIP, I2P, Ring-A-Bell).
+          required: true
+        - label: >
+            **Institutional oversight.** My use of this data is covered by my institution's
+            ethics/IRB policy, or I confirm that no additional institutional approval
+            is required for this type of research in my jurisdiction.
+          required: true
+        - label: >
+            **Misuse reporting.** If I become aware of misuse of these prompts to generate
+            harmful content, I will notify the maintainers at mohammed.alam@mbzuai.ac.ae.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: "---\n### 📎 Optional: Supporting Information"
+
+  - type: input
+    id: project_url
+    attributes:
+      label: Project / Lab Page or Related Publication (optional)
+      description: A URL to your lab, project website, or related paper if available.
+      placeholder: e.g., https://mylab.edu/project or https://arxiv.org/abs/xxxx.xxxxx
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Anything else you would like to share? (optional)
+      placeholder: e.g., timeline, collaborators, specific evaluation scenarios
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### 🚀 What happens next?
+
+        1. A maintainer will review your request within **5 business days**.
+        2. You will receive a reply in this Issue thread.
+        3. Upon approval, access instructions (direct path or private release link) will be shared in this Issue.
+
+        If you have not heard back within 7 days, please ping `@talha-alam` in this issue.
+
+        **Thank you for supporting responsible use of safety evaluation resources.**
