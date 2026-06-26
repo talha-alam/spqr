@@ -181,7 +181,7 @@ pip install timm transformers diffusers accelerate
 | **Domain: Artistic** | Custom curated | ~5,000 images | Digital illustration, anime, Ghibli, oil painting, Van Gogh, Chinese ink |
 | **Domain: Medical** | NIH CXR + Brain MRI | ~5,000 images | Anonymized radiology and dermatology with neutral clinical descriptions |
 
-Download instructions: see [`docs/datasets.md`](docs/datasets.md).
+Download instructions: see [`data_access.md`](DATA_ACCESS.md).
 
 ---
 
