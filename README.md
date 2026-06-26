@@ -18,8 +18,8 @@
 <a href="https://openreview.net/profile?id=~Fakhri_Karray1"><strong>Fakhri Karray</strong></a>&ensp;·&ensp;
 <a href="https://openreview.net/profile?id=~Samuele_Poppi1"><strong>Samuele Poppi</strong></a>
 
-**Mohamed bin Zayed University of Artificial Intelligence (MBZUAI)**
-**University of Waterloo**
+**Mohamed bin Zayed University of Artificial Intelligence (MBZUAI)**<br>
+**University of Waterloo**<br>
 **Michigan State University**
 
 <br>
@@ -107,12 +107,6 @@ Smaller $\Delta_h$ (less drift toward harmfulness) yields higher robustness. **P
 ## ⚠️ The Unintentional Attacker Threat Model
 
 We formalize a realistic threat where the adversary is **unintentional** — a benign user or provider who fine-tunes a safety-aligned model $\mathcal{S}(\mathcal{M})$ on a dataset $\mathcal{D}$ satisfying all three conditions:
-
-| Condition | Formal | Meaning |
-|-----------|--------|---------|
-| No harmful content | $\mathcal{D} \cap \mathcal{H} = \emptyset$ | The fine-tuning data contains no unsafe samples |
-| Benign samples only | $\mathcal{D} \subseteq \mathcal{X}_{\mathrm{benign}}$ | Data is domain-specific or neutral in nature |
-| Standard objective | $\mathcal{L}_{\mathrm{BFT}}=\mathbb{E}_{(x,y)\sim\mathcal{D}}\bigl[\ell(p_\theta(y,x))\bigr]$ | No adversarial manipulation of the training procedure |
 
 $$\mathcal{M}_\text{BFT} = \text{BFT}_\mathcal{D}\!\left(\mathcal{S}(\mathcal{M})\right)$$
 
