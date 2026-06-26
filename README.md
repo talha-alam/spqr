@@ -191,33 +191,21 @@ Download instructions: see [`docs/datasets.md`](docs/datasets.md).
 
 ## 🔬 Evaluated Methods
 
-We benchmark 11 representative safety-alignment methods spanning three intervention families:
+Currently supported safety alignment methods:
 
-### Conditioning-Space Edits *(modify text embedding $C$ before cross-attention)*
-
-| Method | Venue | Description |
-|--------|-------|-------------|
-| **RECE** | ECCV 2024 | Reliable and efficient concept erasure via counterfactual distribution-aware editing |
-| **MACE** | CVPR 2024 | Mass concept erasure with multi-attribute consistency constraints |
-| **SPM** | CVPR 2024 | One-dimensional safety adapter for prompt-based steering |
-
-### Attention-Path Edits *(dampen or prune cross-attention responses)*
-
-| Method | Venue | Description |
-|--------|-------|-------------|
-| **ESD** | ICCV 2023 | Erasing concepts from diffusion models via fine-tuning |
-| **SalUn** | arXiv 2023 | Gradient-based weight saliency for machine unlearning |
-| **EraseDiff** | CVPR 2025 | Erasing undesirable influence in diffusion models |
-| **Scissorhands** | ECCV 2024 | Removing data influence via connection sensitivity in networks |
-
-### Parameter-Space Unlearning *(update weights for persistent alignment)*
-
-| Method | Venue | Description |
-|--------|-------|-------------|
-| **UCE** | WACV 2024 | Unified concept editing with joint contrastive erasure objective |
-| **STEREO** | arXiv 2024 | Adversarially robust concept erasing from T2I generation |
-| **AdvUnlearn** | NeurIPS 2024 | Defensive unlearning with adversarial training for robust erasure |
-| **FMN** | CVPRW 2024 | Forget-Me-Not — learning to forget in T2I diffusion models |
+| Method | Type | Paper |
+|--------|------|-------|
+| **RECE** | Conditioning | [ECCV 2024](link) |
+| **UCE** | Unified Editing | [WACV 2024](link) |
+| **MACE** | Multi-Concept | [CVPR 2024](link) |
+| **ESD** | Concept Erasure | [ICCV 2023](link) |
+| **SalUn** | Gradient-based | [arXiv 2023](link) |
+| **STEREO** | Adversarial | [arXiv 2024](link) |
+| **SPM** | Prompt Steering | [CVPR 2024](link) |
+| **AdvUnlearn** | Defensive | [NeurIPS 2024](link) |
+| **FMN** | Forgetting | [CVPRW 2024](link) |
+| **EraseDiff** | Influence | [CVPR 2025](link) |
+| **Scissorhands** | Connection | [ECCV 2024](link) |
 
 ---
 
