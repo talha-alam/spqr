@@ -19,6 +19,8 @@
 <a href="https://openreview.net/profile?id=~Samuele_Poppi1"><strong>Samuele Poppi</strong></a>
 
 **Mohamed bin Zayed University of Artificial Intelligence (MBZUAI)**
+**University of Waterloo**
+**Michigan State University**
 
 <br>
 
@@ -110,7 +112,14 @@ We formalize a realistic threat where the adversary is **unintentional** — a b
 |-----------|--------|---------|
 | No harmful content | $\mathcal{D} \cap \mathcal{H} = \emptyset$ | The fine-tuning data contains no unsafe samples |
 | Benign samples only | $\mathcal{D} \subseteq \mathcal{X}_\text{benign}$ | Data is domain-specific or neutral in nature |
-| Standard objective | $\mathcal{L}_\text{BFT} = \mathbb{E}_{(x,y)\sim\mathcal{D}}[\ell(p_\theta(y \mid x))]$ | No adversarial manipulation of the training procedure |
+| Standard objective | $$
+\mathcal{L}_{\mathrm{BFT}}
+=
+\mathbb{E}_{(x,y)\sim\mathcal{D}}
+\left[
+\ell\left(p_\theta(y \mid x)\right)
+\right]
+$$ | No adversarial manipulation of the training procedure |
 
 $$\mathcal{M}_\text{BFT} = \text{BFT}_\mathcal{D}\!\left(\mathcal{S}(\mathcal{M})\right)$$
 
