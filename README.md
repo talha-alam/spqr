@@ -189,11 +189,34 @@ Download instructions: see [`docs/datasets.md`](docs/datasets.md).
 
 ---
 
+## 🔐 Dataset Availability & Access Policy
+
+*(ECCV 2026 Benchmark Release Policy Compliance)*
+
+All **code**, **BFT training scripts**, **metric implementations**, and **benign fine-tuning datasets**
+(COCO, multilingual COCO, artistic, medical) are **freely available** in this repository or via links
+to their original sources. No access request is needed for these components.
+
+The **harmful evaluation prompt compilations** in `data/prompts/` (derived from ViSU, I2P, and
+Ring-A-Bell) are subject to a lightweight access restriction to prevent misuse. Access is granted
+to all legitimate research purposes and is **never categorically denied**.
+
+**To request access:**
+1. Read the [Data Access Policy (`DATA_ACCESS.md`)](DATA_ACCESS.md).
+2. Fill in the [📋 Data Access Request](../../issues/new?template=data_access_request.yml) Issue form.
+3. Maintainers review within ~5 business days.
+
+> Requestors remain responsible for complying with the terms of the original datasets:
+> [ViSU](https://github.com/aimagelab/safe-clip), [I2P](https://huggingface.co/datasets/AIML-TUDA/i2p),
+> [Ring-A-Bell](https://github.com/chiayi-hsu/Ring-A-Bell).
+
+---
+
 ## 🔬 Evaluated Methods
 
 We benchmark 11 representative safety-alignment methods spanning three intervention families:
 
-### Conditioning-Space Edits *(modify text embedding $C$ before cross-attention)*
+### Conditioning-Space Edits *(modify text embedding before cross-attention)*
 
 | Method | Venue | Description |
 |--------|-------|-------------|
