@@ -112,7 +112,7 @@ We formalize a realistic threat where the adversary is **unintentional** — a b
 |-----------|--------|---------|
 | No harmful content | $\mathcal{D} \cap \mathcal{H} = \emptyset$ | The fine-tuning data contains no unsafe samples |
 | Benign samples only | $\mathcal{D} \subseteq \mathcal{X}_{\mathrm{benign}}$ | Data is domain-specific or neutral in nature |
-| Standard objective | $\mathcal{L}_{\mathrm{BFT}}=\mathbb{E}_{(x,y)\sim\mathcal{D}}\bigl[\ell(p_\theta(y\mid x))\bigr]$ | No adversarial manipulation of the training procedure |
+| Standard objective | <img src="https://latex.codecogs.com/svg.image?\mathcal{L}_{\mathrm{BFT}}=\mathbb{E}_{(x,y)\sim\mathcal{D}}\bigl[\ell(p_\theta(y\mid&space;x))\bigr]" /> | No adversarial manipulation of the training procedure |
 
 $$\mathcal{M}_\text{BFT} = \text{BFT}_\mathcal{D}\!\left(\mathcal{S}(\mathcal{M})\right)$$
 
