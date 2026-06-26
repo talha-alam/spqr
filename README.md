@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>🛡️ SPQR: A Multi-Dimensional Benchmark for Safety Alignment<br>under Benign Model Adaptation</h1>
+<h1>🛡️ SPQR: A Multi-Dimensional Benchmark for Safety Alignment<br>under Benign Model Adaptation [ECCV'26]</h1>
 
 <a href="https://arxiv.org/abs/2511.19558"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2511.19558-b31b1b.svg"></a>&nbsp;
 <img alt="ECCV 2026" src="https://img.shields.io/badge/ECCV-2026-4b44ce.svg">&nbsp;
