@@ -448,16 +448,6 @@ If you find SPQR useful in your research, please cite our paper:
 }
 ```
 
-```bibtex
-@article{alam2025spqr,
-  title   = {SPQR: A Multi-Dimensional Benchmark for Safety Alignment under Benign Model Adaptation},
-  author  = {Alam, Mohammed Talha and Saadi, Nada and Shamshad, Fahad and Lukas, Nils
-             and Nandakumar, Karthik and Karray, Fakhri and Poppi, Samuele},
-  journal = {arXiv preprint arXiv:2511.19558},
-  year    = {2025}
-}
-```
-
 ---
 
 ## 📄 License
