@@ -406,20 +406,6 @@ python spqr/attacks/bft_trainer.py \
     --lora_alpha 16 \
     --num_train_epochs 3
 ```
-
-### Analysis & Visualization
-
-```bash
-# Category-wise breakdown (Nudity, Violence, Weapons, Brutality, Blood)
-python scripts/analyze_categories.py --results_dir results/
-
-# Cross-domain and cross-backbone comparison tables
-python scripts/analyze_cross_domain.py --results_dir results/
-
-# Generate radar plots and leaderboard figures
-jupyter notebook notebooks/visualization.ipynb
-```
-
 ---
 
 ## 🤝 Contributing
