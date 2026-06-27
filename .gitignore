@@ -1,3 +1,6 @@
+# Submission artifacts (do not publish to the public repo)
+*.pdf
+
 # Large Files - NEVER COMMIT
 *.pth
 *.pt

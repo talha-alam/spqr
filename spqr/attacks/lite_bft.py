@@ -1,16 +1,20 @@
 """
 Lite BFT Profile: LoRA-based parameter-efficient fine-tuning.
-Updates only low-rank adapters while keeping UNet frozen.
+Injects low-rank adapters into the attention projections while the UNet stays frozen.
 """
-from .bft_trainer import main as bft_main
-import sys
+from . import run_bft
+
 
 def run_lite_bft(**kwargs):
-    """Run BFT with LoRA profile (Lite)"""
-    # Set LoRA-specific parameters
-    kwargs['params'] = 'lora'
-    # Add other LoRA-specific configs
-    return bft_main(**kwargs)
+    """Run BFT with the LoRA profile (Lite). Accepts bft_trainer CLI args as kwargs."""
+    kwargs.setdefault("lora_rank", 8)
+    kwargs.setdefault("lora_alpha", 16)
+    return run_bft("lite", **kwargs)
+
 
 if __name__ == "__main__":
-    run_lite_bft()
+    # Delegate to the trainer CLI with the lite profile forced on.
+    import sys
+    from . import bft_trainer
+    sys.argv = sys.argv[:1] + sys.argv[1:] + ["--profile", "lite"]
+    bft_trainer.main()

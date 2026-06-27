@@ -1,0 +1,93 @@
+# Safety-Alignment Method Registry
+#
+# The 11 representative safety-alignment methods benchmarked by SPQR, grouped by
+# intervention family. SPQR consumes the *aligned model checkpoint* produced by
+# each method (converted to the diffusers format via
+# spqr/utils/checkpoint_converter.py); the registry below records provenance and
+# the official implementation each checkpoint was produced with.
+#
+# To benchmark a new method, add an entry here and drop its diffusers-format
+# checkpoint into your aligned-models directory (see CONTRIBUTING.md).
+
+families:
+  conditioning_space_edit: "Modify the text embedding before cross-attention"
+  attention_path_edit: "Dampen or prune cross-attention responses"
+  parameter_space_unlearning: "Update weights for persistent alignment"
+
+methods:
+  rece:
+    name: "RECE"
+    family: conditioning_space_edit
+    venue: "ECCV 2024"
+    repo: "https://github.com/CharlesGong12/RECE"
+    description: "Reliable and efficient concept erasure via counterfactual, distribution-aware editing."
+
+  mace:
+    name: "MACE"
+    family: conditioning_space_edit
+    venue: "CVPR 2024"
+    repo: "https://github.com/Shilin-LU/MACE"
+    description: "Mass concept erasure with multi-attribute consistency constraints."
+
+  spm:
+    name: "SPM"
+    family: conditioning_space_edit
+    venue: "CVPR 2024"
+    repo: "https://github.com/Con6924/SPM"
+    description: "One-dimensional safety adapter for prompt-based steering."
+
+  esd:
+    name: "ESD"
+    family: attention_path_edit
+    venue: "ICCV 2023"
+    repo: "https://github.com/rohitgandikota/erasing"
+    description: "Erasing concepts from diffusion models via fine-tuning."
+
+  salun:
+    name: "SalUn"
+    family: attention_path_edit
+    venue: "arXiv 2023 / ICLR 2024"
+    repo: "https://github.com/OPTML-Group/Unlearn-Saliency"
+    description: "Gradient-based weight saliency for machine unlearning."
+
+  erasediff:
+    name: "EraseDiff"
+    family: attention_path_edit
+    venue: "CVPR 2025"
+    repo: "https://github.com/JingWu321/EraseDiff"
+    description: "Erasing undesirable influence in diffusion models."
+
+  scissorhands:
+    name: "Scissorhands"
+    family: attention_path_edit
+    venue: "ECCV 2024"
+    repo: "https://github.com/JingWu321/Scissorhands"
+    description: "Removing data influence via connection sensitivity in networks."
+
+  uce:
+    name: "UCE"
+    family: parameter_space_unlearning
+    venue: "WACV 2024"
+    repo: "https://github.com/rohitgandikota/unified-concept-editing"
+    description: "Unified concept editing with a joint, closed-form erasure objective."
+
+  stereo:
+    name: "STEREO"
+    family: parameter_space_unlearning
+    venue: "arXiv 2024 / CVPR 2025"
+    repo: "https://github.com/koushiksrivats/robust-concept-erasing"
+    description: "Adversarially robust concept erasing from T2I generation."
+
+  advunlearn:
+    name: "AdvUnlearn"
+    family: parameter_space_unlearning
+    venue: "NeurIPS 2024"
+    repo: "https://github.com/OPTML-Group/AdvUnlearn"
+    description: "Defensive unlearning with adversarial training for robust erasure."
+
+  fmn:
+    name: "FMN"
+    family: parameter_space_unlearning
+    venue: "CVPRW 2024"
+    repo: "https://github.com/SHI-Labs/Forget-Me-Not"
+    description: "Forget-Me-Not — learning to forget in T2I diffusion models."

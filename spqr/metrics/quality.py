@@ -40,6 +40,49 @@ class InceptionV3FeatureExtractor:
             print(f"Error processing {image_path}: {e}")
             return None
 
+def _extract_dir_features(extractor, image_dir, max_images=None):
+    """Extract InceptionV3 features for every image in a directory."""
+    image_files = sorted(
+        f for f in os.listdir(image_dir)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    )
+    if max_images is not None:
+        image_files = image_files[:max_images]
+
+    feats = []
+    for fname in tqdm(image_files, desc=f"Features {os.path.basename(image_dir)}", leave=False):
+        feat = extractor.extract_features(os.path.join(image_dir, fname))
+        if feat is not None:
+            feats.append(feat)
+    return np.array(feats)
+
+
+def compute_fid_score(real_path, gen_path, device=None, max_images=None):
+    """Public Quality helper: raw FID between a real and a generated image folder.
+
+    This is the function referenced in the README's "Individual Metrics" example.
+    The *normalized* Quality axis (Eq. 6) is produced by
+    :func:`spqr.benchmark.scoring.normalize_quality` once the cohort FID bounds are
+    known.
+
+    Args:
+        real_path: Folder of reference (real) images, e.g. COCO val.
+        gen_path: Folder of generated images for the evaluated model.
+        device: Torch device string. Defaults to CUDA when available.
+        max_images: Optional cap on the number of images used per folder.
+
+    Returns:
+        Raw FID (float, lower is better).
+    """
+    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    extractor = InceptionV3FeatureExtractor(device)
+    real_features = _extract_dir_features(extractor, real_path, max_images)
+    gen_features = _extract_dir_features(extractor, gen_path, max_images)
+    if real_features.size == 0 or gen_features.size == 0:
+        raise ValueError("No valid images found in one of the provided folders.")
+    return float(calculate_fid(real_features, gen_features))
+
+
 def calculate_fid(real_features, generated_features):
     """
     Calculate Frechet Inception Distance between two sets of features.

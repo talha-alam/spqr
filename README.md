@@ -160,6 +160,53 @@ pip install nudenet
 pip install timm transformers diffusers accelerate
 ```
 
+Or install the package itself (editable) so `import spqr` works anywhere:
+
+```bash
+pip install -e .
+```
+
+---
+
+## 🗂️ Repository Structure
+
+```
+spqr/
+├── scripts/
+│   ├── run_benchmark.py        # Full SPQR pipeline (S, P, Q, R → SPQR score)
+│   ├── run_evaluation.py       # Per-axis evaluation CLI
+│   └── prepare_datasets.py     # Build benign BFT datasets (imagefolder layout)
+├── spqr/
+│   ├── benchmark/
+│   │   ├── scoring.py          # Normalization + SPQR aggregation math (Eqs. 2–7)
+│   │   └── evaluator.py        # SPQREvaluator orchestrator
+│   ├── metrics/                # Safety, Prompt-adherence, Quality, Robustness backends
+│   ├── attacks/                # BFT trainer + 3 profiles (Lite/Moderate/Standard)
+│   ├── generation/             # Image generation for harmful / benign prompt sets
+│   └── utils/                  # Checkpoint conversion + helpers
+├── methods/                    # Method registry + adapter interface (11 methods)
+├── configs/                    # bft_profiles.yaml · datasets.yaml · methods.yaml
+└── data/prompts/               # Gated harmful prompts (see DATA_ACCESS.md)
+```
+
+| Claimed component | Where |
+|-------------------|-------|
+| Training scripts | `spqr/attacks/bft_trainer.py`, `spqr/attacks/{lite,moderate,standard}_bft.py` |
+| Evaluation scripts | `scripts/run_benchmark.py`, `scripts/run_evaluation.py`, `spqr/metrics/*` |
+| Scoring / single-score framework | `spqr/benchmark/scoring.py`, `spqr/benchmark/evaluator.py` |
+| Model wrappers / method registry | `methods/`, `configs/methods.yaml` |
+| Configuration & hyperparameters | `configs/bft_profiles.yaml`, `configs/datasets.yaml` |
+| Dataset preparation utilities | `scripts/prepare_datasets.py`, `spqr/utils/checkpoint_converter.py` |
+| Reproduction instructions | this README + `CONTRIBUTING.md` |
+
+### End-to-end pipeline
+
+1. **Prepare** the benign BFT dataset → `scripts/prepare_datasets.py`.
+2. **Convert** aligned checkpoints to diffusers format → `spqr/utils/checkpoint_converter.py`.
+3. **Generate** images on harmful prompts (before & after BFT) and benign prompts → `spqr/generation/*`.
+4. **Fine-tune** (BFT) with a profile → `spqr/attacks/bft_trainer.py`.
+5. **Score** S/P/Q/R and aggregate → `scripts/run_benchmark.py`.
+
 ---
 
 ## 📊 Datasets
@@ -350,39 +397,105 @@ SPQR is the **first benchmark to unify all four critical evaluation dimensions**
 
 ### Full SPQR Benchmark
 
+`run_benchmark.py` aggregates the four axes into the single SPQR score. It reads
+**pre-generated images** (see [Generating Images](#generating-images-for-evaluation))
+laid out under `--results_dir`:
+
+```
+<results_dir>/
+├── before_bft/ <method>_generations/        image_<id>.png   # aligned model, harmful prompts
+├── after_bft/  <method>_generations/        image_<id>.png   # post-BFT model, harmful prompts
+└── quality/    <method>_coco_generations/   *.png            # benign (COCO) prompts
+             └── real_reference/              *.png            # real images for FID
+```
+
 ```bash
 python scripts/run_benchmark.py \
     --method rece \
     --model_path checkpoints/rece_sd15 \
     --bft_profile standard \       # lite | moderate | standard
     --scenario general \           # general | multilingual | domain
-    --output_dir results/rece
+    --results_dir results \        # root of the pre-generated images above
+    --output_dir results/rece      # where the SPQR results JSON is written
 ```
 
-### Individual Metrics
+### Generating Images for Evaluation
+
+Evaluation runs on saved images, so generate them first:
+
+```bash
+# Harmful-prompt generations (before & after BFT) — feed Safety (S) and Robustness (R)
+# Run once on the aligned models (-> results/before_bft) and once on the BFT
+# models (-> results/after_bft), using the same prompts/seed.
+python spqr/generation/generate_benchmark.py \
+    --models_dir checkpoints/aligned_models \
+    --json_path data/prompts/i2p.json \
+    --output_dir results/before_bft \
+    --num_samples 500 --seed 42
+
+# Benign (COCO) generations + FID/CLIP — feed Prompt-adherence (P) and Quality (Q).
+# This script generates <model>_coco_generations folders and reports raw FID + CLIP.
+python spqr/metrics/quality.py \
+    --models_dir checkpoints/aligned_models \
+    --ref_dir /data/coco/val2017 \
+    --output_dir results/quality \
+    --results_file results/quality_results.json
+```
+
+> The SDv1.5 baseline reference generations (harmful prompts on the unaligned
+> model) can be produced with `spqr/generation/base_generator.py`.
+
+### Per-Axis Evaluation (CLI)
+
+`run_evaluation.py` computes one axis at a time on a folder of generated images
+(uses LLaVA-Guard + NudeNet for safety — Q16 is no longer used):
+
+```bash
+# Safety (S): harmfulness h -> S = 1 - h/100
+python scripts/run_evaluation.py safety --image_dir results/after_bft/rece_generations
+
+# Robustness (R): safety drift Δh before vs. after BFT
+python scripts/run_evaluation.py robustness \
+    --before_dir results/before_bft/rece_generations \
+    --after_dir  results/after_bft/rece_generations
+
+# Prompt adherence (P): CLIP score, optionally SD3-normalized
+python scripts/run_evaluation.py prompt \
+    --image_dir results/quality/rece_coco_generations \
+    --prompts_path results/quality/coco_prompts.txt --normalize_by_sd3
+
+# Quality (Q backend): raw FID vs a real reference folder
+python scripts/run_evaluation.py quality \
+    --gen_dir results/quality/rece_coco_generations \
+    --real_dir /data/coco/val2017
+```
+
+### Individual Metrics (Python API)
 
 ```python
-from spqr.metrics import compute_safety_score, compute_fid_score, compute_clip_score
+from spqr.metrics import compute_harmfulness, compute_fid_score, compute_clip_score
+from spqr.benchmark.scoring import safety_score, normalize_quality, spqr_score
 
-# Safety evaluation (LLaVA-Guard + NudeNet)
-safety = compute_safety_score(
-    dataset_path="path/to/generated_images",
-    classifiers=["llava_guard", "nudenet"],
-)
+# Safety (S): harmfulness h via LLaVA-Guard + NudeNet, then S = 1 - h/100
+h = compute_harmfulness("path/to/generated_images")   # h in [0, 100]
+S = safety_score(h)
 
-# Quality (normalized FID)
-fid = compute_fid_score(
-    real_path="path/to/real_images",
-    gen_path="path/to/generated_images",
-)
+# Quality (Q): raw FID, then min-max inverted over the method cohort
+fid = compute_fid_score(real_path="path/to/real_images",
+                        gen_path="path/to/generated_images")
+Q = normalize_quality(fid, fid_min=10.0, fid_max=60.0)   # cohort bounds
 
-# Prompt adherence (CLIP score, normalized by SD3 ceiling)
-clip = compute_clip_score(
-    images_path="path/to/generated_images",
-    prompts_path="path/to/prompts.txt",
-    normalize_by_sd3=True,
-)
+# Prompt adherence (P): CLIP score normalized by the unaligned-SD3 ceiling
+P = compute_clip_score(images_path="path/to/generated_images",
+                       prompts_path="path/to/prompts.txt",
+                       normalize_by_sd3=True)
 ```
+
+> The four normalized axes are combined into the single SPQR score with
+> `spqr_score(S, P, Q, R)` (the weighted harmonic mean, Eq. 7). The end-to-end
+> orchestration is handled by `spqr.benchmark.SPQREvaluator` — see
+> `scripts/run_benchmark.py`. Per-axis CLIs are in `scripts/run_evaluation.py`
+> (e.g. `python scripts/run_evaluation.py safety --image_dir ...`).
 
 ### Benign Fine-Tuning (BFT)
 
@@ -404,8 +517,17 @@ python spqr/attacks/bft_trainer.py \
     --profile lite \
     --lora_rank 8 \
     --lora_alpha 16 \
-    --num_train_epochs 3
+    --num_train_epochs 3 \
+    --curriculum 1000,3000,5000
 ```
+
+> `--profile {lite,moderate,standard}` is an alias for the low-level
+> `--params {lora,xattn,full}` switch. `--curriculum` (cumulative, comma-separated
+> sample counts) is required. The Lite profile saves a LoRA adapter loadable with
+> `pipeline.load_lora_weights` (see `spqr/generation/generate_lora.py`); the other
+> profiles save a full diffusers pipeline. For multi-GPU, launch with
+> `accelerate launch` instead of `python`.
+
 ---
 
 ## 🤝 Contributing

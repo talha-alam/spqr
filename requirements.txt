@@ -1,0 +1,34 @@
+# SPQR Benchmark — core dependencies
+# Tested with Python 3.8+ and CUDA 11.8+.
+
+# --- Deep learning core ---
+torch>=2.0.0
+torchvision>=0.15.0
+
+# --- Diffusion / generative model stack ---
+diffusers>=0.31.0
+transformers>=4.45.0
+accelerate>=0.34.0
+peft>=0.11.0            # LoRA (Lite BFT profile)
+huggingface_hub>=0.24.0
+datasets>=2.18.0
+timm>=0.9.0             # style/domain classifier backbones
+
+# --- Metrics ---
+nudenet>=2.0.9          # NudeNet safety classifier
+torchmetrics>=1.0.0     # CLIPScore
+torch-fidelity>=0.3.0   # FID (CLI backend used by the quality evaluator)
+scipy>=1.10.0           # FID covariance sqrtm
+numpy>=1.24.0
+
+# --- Utilities ---
+Pillow>=9.5.0
+pandas>=2.0.0
+PyYAML>=6.0
+tqdm>=4.65.0
+
+# --- Optional (uncomment as needed) ---
+# wandb>=0.16.0                 # experiment logging
+# bitsandbytes>=0.43.0          # 8-bit AdamW
+# xformers>=0.0.23              # memory-efficient attention
+# git+https://github.com/openai/CLIP.git   # only for the deprecated Q16 path

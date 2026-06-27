@@ -42,10 +42,24 @@ from diffusers.utils.import_utils import is_xformers_available
 
 from accelerate import DistributedDataParallelKwargs
 
-from eval_vit import evaluate
 from transformers import ViTForImageClassification, ViTImageProcessor
-from eval_style import evaluate_style
-import timm
+
+# Optional classifier-based validation hooks. These are only needed when a
+# `--model_path` (object classifier) or `--theme` (style classifier) is supplied
+# for in-the-loop accuracy tracking; the core BFT does not require them.
+try:
+    from eval_vit import evaluate  # object/concept classifier accuracy
+except ImportError:
+    evaluate = None
+try:
+    from eval_style import evaluate_style  # style/theme classifier accuracy
+except ImportError:
+    evaluate_style = None
+
+try:
+    import timm
+except ImportError:
+    timm = None
 
 if is_wandb_available():
     import wandb
@@ -374,7 +388,30 @@ def parse_args():
         "--params",
         type=str,
         default="full",
-        help="Parameter groups to update.",
+        choices=["full", "xattn", "lora"],
+        help="Parameter groups to update: full (Standard), xattn (Moderate), lora (Lite).",
+    )
+
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default=None,
+        choices=["lite", "moderate", "standard"],
+        help="BFT profile alias. Overrides --params: lite->lora, moderate->xattn, standard->full.",
+    )
+
+    parser.add_argument(
+        "--lora_rank",
+        type=int,
+        default=8,
+        help="LoRA rank for the Lite profile.",
+    )
+
+    parser.add_argument(
+        "--lora_alpha",
+        type=int,
+        default=16,
+        help="LoRA alpha for the Lite profile.",
     )
 
     parser.add_argument(
@@ -412,7 +449,11 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    
+
+    # Map the BFT profile alias onto the low-level --params switch.
+    if args.profile is not None:
+        args.params = {"lite": "lora", "moderate": "xattn", "standard": "full"}[args.profile]
+
     args.curriculum = [int(_) for _ in args.curriculum.split(",")]
     args.curriculum_checkpoints = [int(_) for _ in args.curriculum_checkpoints.split(",")] if args.curriculum_checkpoints else None
     args.curriculum_epochs = [args.num_train_epochs] * len(args.curriculum)
@@ -600,9 +641,13 @@ def main():
             validation_prompts = [line.strip() for line in f if line.strip()]
         args.validation_prompts = validation_prompts
     
-    # Load classifier model once
+    # Load classifier model once (optional in-the-loop accuracy tracking).
     eval_model = None
-    if args.model_path:
+    if args.model_path and args.theme is None and evaluate is None:
+        logger.warning("eval_vit not available; skipping object-classifier accuracy tracking.")
+    elif args.model_path and args.theme is not None and (evaluate_style is None or timm is None):
+        logger.warning("eval_style/timm not available; skipping style-classifier accuracy tracking.")
+    elif args.model_path:
         try:
             if args.theme is None:
                 eval_model = ViTForImageClassification.from_pretrained(args.model_path)
@@ -746,6 +791,19 @@ def main():
                 if "attn2.to_k" in name or "attn2.to_v" in name or "attn2.to_out" in name:
                     param.requires_grad = True
                     params_to_optimize.append(param)
+        elif args.params == "lora":
+            # Lite profile: inject low-rank adapters into the attention projections
+            # and train only the adapter parameters (UNet weights stay frozen).
+            from peft import LoraConfig
+            unet.requires_grad_(False)
+            lora_config = LoraConfig(
+                r=args.lora_rank,
+                lora_alpha=args.lora_alpha,
+                init_lora_weights="gaussian",
+                target_modules=["to_k", "to_q", "to_v", "to_out.0"],
+            )
+            unet.add_adapter(lora_config)
+            params_to_optimize = [p for p in unet.parameters() if p.requires_grad]
 
         optimizer = optimizer_cls(
             params_to_optimize,
@@ -976,7 +1034,19 @@ def main():
 
                 if args.curriculum_checkpoints and curr_idx in args.curriculum_checkpoints:
                     checkpoint_path = os.path.join(args.output_dir, f"curriculum-{curr_idx}")
-                    pipeline.save_pretrained(checkpoint_path)
+                    if args.params == "lora":
+                        from peft.utils import get_peft_model_state_dict
+                        from diffusers.utils import convert_state_dict_to_diffusers
+                        lora_sd = convert_state_dict_to_diffusers(
+                            get_peft_model_state_dict(accelerator.unwrap_model(unet))
+                        )
+                        StableDiffusionPipeline.save_lora_weights(
+                            save_directory=checkpoint_path,
+                            unet_lora_layers=lora_sd,
+                            safe_serialization=True,
+                        )
+                    else:
+                        pipeline.save_pretrained(checkpoint_path)
                     logger.info(f"Saved checkpoint to {checkpoint_path}")
 
                 logger.info("Running evaluation...")
@@ -1026,11 +1096,26 @@ def main():
         accelerator.wait_for_everyone()
         if accelerator.is_main_process:
             unet_unwrapped = accelerator.unwrap_model(unet)
-            if args.use_ema and ema_unet is not None:
-                ema_unet.copy_to(unet_unwrapped.parameters())
-            pipeline.unet.load_state_dict(unet_unwrapped.state_dict())
-            pipeline.save_pretrained(args.output_dir)
-            logger.info(f"Saved final model to {args.output_dir}")
+            if args.params == "lora":
+                # Lite profile: save the LoRA adapter in the diffusers format so it
+                # can be loaded with pipeline.load_lora_weights (see generate_lora.py).
+                from peft.utils import get_peft_model_state_dict
+                from diffusers.utils import convert_state_dict_to_diffusers
+                unet_lora_state_dict = convert_state_dict_to_diffusers(
+                    get_peft_model_state_dict(unet_unwrapped)
+                )
+                StableDiffusionPipeline.save_lora_weights(
+                    save_directory=args.output_dir,
+                    unet_lora_layers=unet_lora_state_dict,
+                    safe_serialization=True,
+                )
+                logger.info(f"Saved LoRA adapter to {args.output_dir}")
+            else:
+                if args.use_ema and ema_unet is not None:
+                    ema_unet.copy_to(unet_unwrapped.parameters())
+                pipeline.unet.load_state_dict(unet_unwrapped.state_dict())
+                pipeline.save_pretrained(args.output_dir)
+                logger.info(f"Saved final model to {args.output_dir}")
         
         torch.cuda.empty_cache()
         logger.info(f"{'='*80}")

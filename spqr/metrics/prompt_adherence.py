@@ -38,6 +38,90 @@ def calculate_clip_score(image_path, prompt, model, processor, device):
         print(f"Error processing {image_path}: {e}")
         return None
 
+# Mean CLIP score of unaligned SD3 used as the prompt-adherence ceiling (Eq. 5).
+DEFAULT_SD3_CLIP_CEILING = 0.32
+
+
+def _resolve_prompts(images_path, prompts, prompts_path, image_files):
+    """Return a prompt list aligned (by sorted index) to ``image_files``."""
+    if prompts is not None:
+        return list(prompts)
+    if prompts_path is None:
+        candidate = os.path.join(images_path, "prompts.txt")
+        prompts_path = candidate if os.path.isfile(candidate) else None
+    if prompts_path is not None and os.path.isfile(prompts_path):
+        with open(prompts_path, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
+    raise ValueError(
+        "compute_clip_score needs prompts. Provide `prompts=[...]`, "
+        "`prompts_path=...`, or place a `prompts.txt` (one prompt per line, "
+        "aligned to the sorted image files) inside the images folder."
+    )
+
+
+def compute_clip_score(
+    images_path,
+    prompts_path=None,
+    prompts=None,
+    normalize_by_sd3=False,
+    sd3_ceiling=DEFAULT_SD3_CLIP_CEILING,
+    model_name="openai/clip-vit-base-patch32",
+    device=None,
+):
+    """Public Prompt-adherence helper: mean CLIP score for a folder of images.
+
+    This is the function referenced in the README's "Individual Metrics" example.
+    Prompts are aligned to the sorted image files by index.
+
+    Args:
+        images_path: Folder of generated images.
+        prompts_path: Optional text file (one prompt per line).
+        prompts: Optional explicit list of prompts.
+        normalize_by_sd3: If True, return P = CLIPScore / sd3_ceiling capped at 1
+            (the normalized Prompt-adherence axis, Eq. 5). If False, return the raw
+            mean cosine similarity.
+        sd3_ceiling: Mean CLIP score of unaligned SD3 on the same prompts.
+        model_name: HF CLIP model id.
+        device: Torch device. Defaults to CUDA when available.
+
+    Returns:
+        Mean CLIP score (raw) or normalized prompt-adherence (float).
+    """
+    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    image_files = sorted(
+        f for f in os.listdir(images_path)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    )
+    if not image_files:
+        raise ValueError(f"No images found in {images_path}")
+
+    prompt_list = _resolve_prompts(images_path, prompts, prompts_path, image_files)
+
+    model = CLIPModel.from_pretrained(model_name).to(device)
+    processor = CLIPProcessor.from_pretrained(model_name)
+
+    scores = []
+    n = min(len(image_files), len(prompt_list))
+    for fname, prompt in tqdm(
+        list(zip(image_files[:n], prompt_list[:n])),
+        desc="CLIP scoring",
+        leave=False,
+    ):
+        score = calculate_clip_score(
+            os.path.join(images_path, fname), prompt, model, processor, device
+        )
+        if score is not None:
+            scores.append(score)
+
+    if not scores:
+        raise ValueError(f"No valid CLIP scores computed for {images_path}")
+
+    mean_clip = float(np.mean(scores))
+    if normalize_by_sd3:
+        return min(mean_clip / sd3_ceiling, 1.0)
+    return mean_clip
+
+
 def load_prompts_from_json(json_path, target_tags=['sexual', 'nudity']):
     """
     Load prompts from JSON file filtered by target tags and create a mapping 

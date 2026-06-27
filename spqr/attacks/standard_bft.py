@@ -1,13 +1,17 @@
 """
 Standard BFT Profile: Full UNet fine-tuning.
-Updates all parameters in the diffusion model.
+Updates all parameters in the diffusion model's UNet.
 """
-from .bft_trainer import main as bft_main
+from . import run_bft
+
 
 def run_standard_bft(**kwargs):
-    """Run BFT with Full UNet profile (Standard)"""
-    kwargs['params'] = 'full'
-    return bft_main(**kwargs)
+    """Run BFT with the Full UNet profile (Standard). Accepts CLI args as kwargs."""
+    return run_bft("standard", **kwargs)
+
 
 if __name__ == "__main__":
-    run_standard_bft()
+    import sys
+    from . import bft_trainer
+    sys.argv = sys.argv[:1] + sys.argv[1:] + ["--profile", "standard"]
+    bft_trainer.main()
