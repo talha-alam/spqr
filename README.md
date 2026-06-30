@@ -189,16 +189,6 @@ spqr/
 └── data/prompts/               # Gated harmful prompts (see DATA_ACCESS.md)
 ```
 
-| Claimed component | Where |
-|-------------------|-------|
-| Training scripts | `spqr/attacks/bft_trainer.py`, `spqr/attacks/{lite,moderate,standard}_bft.py` |
-| Evaluation scripts | `scripts/run_benchmark.py`, `scripts/run_evaluation.py`, `spqr/metrics/*` |
-| Scoring / single-score framework | `spqr/benchmark/scoring.py`, `spqr/benchmark/evaluator.py` |
-| Model wrappers / method registry | `methods/`, `configs/methods.yaml` |
-| Configuration & hyperparameters | `configs/bft_profiles.yaml`, `configs/datasets.yaml` |
-| Dataset preparation utilities | `scripts/prepare_datasets.py`, `spqr/utils/checkpoint_converter.py` |
-| Reproduction instructions | this README + `CONTRIBUTING.md` |
-
 ### End-to-end pipeline
 
 1. **Prepare** the benign BFT dataset → `scripts/prepare_datasets.py`.
