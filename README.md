@@ -23,9 +23,6 @@
 **Michigan State University**
 
 <br>
-
-[<a href="https://arxiv.org/abs/2511.19558">📄 Paper</a>] &nbsp; [<a href="https://github.com/talha-alam/spqr">💻 Code</a>] &nbsp; [<a href="https://arxiv.org/abs/2511.19558">📊 Results</a>]
-
 </div>
 
 ---
