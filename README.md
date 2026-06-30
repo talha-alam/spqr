@@ -8,8 +8,6 @@
 <img alt="Python 3.8+" src="https://img.shields.io/badge/python-3.8+-3776ab.svg">&nbsp;
 <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 
-<br><br>
-
 <a href="https://openreview.net/profile?id=~Mohammed_Talha_Alam1"><strong>Mohammed Talha Alam</strong></a>&ensp;·&ensp;
 <a href="https://openreview.net/profile?id=~Nada_Saadi1"><strong>Nada Saadi</strong></a>&ensp;·&ensp;
 <a href="https://openreview.net/profile?id=~Fahad_Shamshad2"><strong>Fahad Shamshad</strong></a>&ensp;·&ensp;
@@ -22,7 +20,6 @@
 **University of Waterloo**<br>
 **Michigan State University**
 
-<br>
 </div>
 
 ---
